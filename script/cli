@@ -5,6 +5,8 @@ class Cli
     get_email_address
     print_options
     get_option_number
+    process_long_url if @option == 0
+    process_short_url if @option == 1
   end
 
   def get_email_address
@@ -23,8 +25,6 @@ class Cli
       @option = gets.chomp.to_i
       break if [0, 1].include?(@option)
     end
-    process_long_url if @option == 0
-    process_short_url if @option == 1
   end
 
   def process_long_url

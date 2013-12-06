@@ -1,0 +1,46 @@
+class Cli
+  attr_accessor :user
+
+  def run
+    get_email_address
+    print_options
+    get_option_number
+  end
+
+  def get_email_address
+    puts "Input your email:"
+  	email = gets.chomp
+    @user = User.find_by_email(email)
+  end
+
+  def print_options
+    puts "0. Create shortened URL"
+    puts "1. Visit shortened URL"
+  end
+
+  def get_option_number
+    while true
+      @option = gets.chomp.to_i
+      break if [0, 1].include?(@option)
+    end
+    process_long_url if @option == 0
+    process_short_url if @option == 1
+  end
+
+  def process_long_url
+    puts "Type in your long url"
+    long_url = gets.chomp
+    short_url_obj = ShortenedUrl.create_for_user_and_long_url!(@user, long_url)
+    puts "Short url is: #{short_url_obj.short_url}"
+  end
+
+  def process_short_url
+    puts "Type in your short url"
+    short_url = gets.chomp
+    short_url_obj = ShortenedUrl.find_by_short_url(short_url)
+    Visit.record_visit!(@user, short_url_obj)
+    Launchy.open(short_url_obj.long_url)
+  end
+end
+
+Cli.new.run
